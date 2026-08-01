@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
-import { toggleVotService } from "./interaction.service";
+import { addCommentService, toggleVotService } from "./interaction.service";
 
+// Vote Controller
 export const handleVotcontroller = async (req: Request, res: Response) => {
     try {
 
@@ -16,7 +17,26 @@ export const handleVotcontroller = async (req: Request, res: Response) => {
         success: true,
         hasVoted: result.hasVoted,
         project: result.project,
-    });
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+}
+
+
+// Add Comment Controller
+export const handleCommentController = async (req: Request, res: Response) => {
+    try {
+        const { projectId, userEmail, commentText } = req.body;
+
+        const result = await addCommentService(projectId, userEmail, commentText);
+
+        res.status(200).json({
+            success: true,
+            message: "Comment added successfully",
+            comment: result,
+        })
+
     } catch (error: any) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }

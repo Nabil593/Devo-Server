@@ -1,12 +1,13 @@
 import { ObjectId } from "mongodb";
 import { connectDB } from "../../config/db";
-import { IInteraction } from "./interaction.interface";
+import { IInteractionComment, IInteractionVote } from "./interaction.interface";
 import { IProject } from "../projects/project.interface";
 
+// Toggle Vote service
 export const toggleVotService = async (projectId: string, userEmail: string) => {
   const db = await connectDB();
   const projectsCollection = db.collection<IProject>("projects");
-  const interactionsCollection = db.collection<IInteraction>("interactions");
+  const interactionsCollection = db.collection<IInteractionVote>("interactions");
 
   const query = { projectId, userEmail };
 
@@ -39,3 +40,21 @@ export const toggleVotService = async (projectId: string, userEmail: string) => 
     return {hasVoted: true, project: updatedProject}
   }
 };
+
+
+
+// Add Comment Service
+export const addCommentService = async (projectId: string, userEmail: string, commentText: string) => {
+  const db = await connectDB();
+  const interactionsCollection = db.collection<IInteractionComment>("interactions");
+
+  const addComment = await interactionsCollection.insertOne({
+    projectId,
+    userEmail,
+    commentText,
+    createdAt: new Date(),
+  });
+
+  return addComment;
+
+}
