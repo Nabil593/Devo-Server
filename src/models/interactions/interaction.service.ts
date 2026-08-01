@@ -7,7 +7,7 @@ import { IProject } from "../projects/project.interface";
 export const toggleVotService = async (projectId: string, userEmail: string) => {
   const db = await connectDB();
   const projectsCollection = db.collection<IProject>("projects");
-  const interactionsCollection = db.collection<IInteractionVote>("interactions");
+  const interactionsCollection = db.collection<IInteractionVote>("Votes");
 
   const query = { projectId, userEmail };
 
@@ -46,7 +46,7 @@ export const toggleVotService = async (projectId: string, userEmail: string) => 
 // Add Comment Service
 export const addCommentService = async (projectId: string, userEmail: string, commentText: string) => {
   const db = await connectDB();
-  const interactionsCollection = db.collection<IInteractionComment>("interactions");
+  const interactionsCollection = db.collection<IInteractionComment>("Comments");
 
   const addComment = await interactionsCollection.insertOne({
     projectId,
