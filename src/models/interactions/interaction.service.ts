@@ -44,17 +44,54 @@ export const toggleVotService = async (projectId: string, userEmail: string) => 
 
 
 // Add Comment Service
-export const addCommentService = async (projectId: string, userEmail: string, commentText: string) => {
+export const addCommentService = async (projectId: string, userEmail: string, commentText: string, userName: string, userImage: string) => {
   const db = await connectDB();
   const interactionsCollection = db.collection<IInteractionComment>("Comments");
 
   const addComment = await interactionsCollection.insertOne({
     projectId,
     userEmail,
+    userName,
+    userImage,
     commentText,
     createdAt: new Date(),
   });
 
-  return addComment;
+  const newComment = await interactionsCollection.findOne({ _id: addComment.insertedId });
 
+  return newComment;
+}
+
+// Get Comments Service
+export const getCommentsService = async (projectId: string) => {
+  const db = await connectDB();
+  const interactionsCollection = db.collection<IInteractionComment>("Comments");
+
+  const comments = await interactionsCollection.find({ projectId }).toArray();
+  return comments;
+}
+
+
+// Delete Comment Service
+export const deleteCommentService = async (commentId: string) => {
+  const db = await connectDB();
+  const interactionsCollection = db.collection<IInteractionComment>("Comments");
+
+  await interactionsCollection.deleteOne({ _id: new ObjectId(commentId) });
+
+}
+
+
+// Edit Comment Service
+export const editCommentService = async (commentId: string, newcommentText: string) => {
+  const db = await connectDB();
+  const interactionsCollection = db.collection<IInteractionComment>("Comments");
+
+  const updateComment = await interactionsCollection.findOneAndUpdate(
+    { _id: new ObjectId(commentId) },
+    { $set: { commentText: newcommentText } },
+    { returnDocument: "after" }
+  );
+
+  return updateComment;
 }

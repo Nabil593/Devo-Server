@@ -6,6 +6,8 @@ export interface IInteractionVote {
 export interface IInteractionComment {
   projectId: string;
   userEmail: string;
+  userName: string;
+  userImage: string;
   commentText: string;
   createdAt: Date;
 }
