@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { createNewProject, getAllProjectsService, getSingleDetails } from "./project.service";
+import { createNewProject, getAllProjectsService, getMyProjectsService, getSingleDetails } from "./project.service";
 
 // Create New Project
 export const createProject = async(req: Request, res: Response): Promise<void> => {
     try {
         const projectData = req.body;
-        const result = createNewProject(projectData)
+        const result = await createNewProject(projectData);
 
     res.status(201).json({
       success: true,
@@ -62,3 +62,23 @@ export const getSingleProject = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 };
+
+// Get My Projects
+export const getMyProjects = async (req: Request, res: Response) => {
+  try {
+    const userEmail = req.query.email as string;
+  
+  if(!userEmail) {
+    return res.status(400).json({ success: false, message: "User email is required"});
+  }
+  const myProjects = await getMyProjectsService(userEmail as string);
+  res.status(200).json({ 
+    success: true, 
+    count: myProjects.length, 
+    data: myProjects
+  });
+
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+}

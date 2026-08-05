@@ -57,3 +57,13 @@ export const getSingleDetails = async (projectId: string) => {
     const query = { _id: new ObjectId(projectId) };
     return await collection.findOne(query);
 }
+
+
+// Get My Projects Service
+export const getMyProjectsService = async (userEmail: string) => {
+  const db = await connectDB();
+  const collection = db.collection<IProject>('projects');
+
+  const query = { userEmail: userEmail };
+  return await collection.find(query).toArray();
+}

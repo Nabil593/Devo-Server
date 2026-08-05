@@ -1,10 +1,9 @@
 import { Request, Response } from "express"
-import { addCommentService, deleteCommentService, editCommentService, getCommentsService, toggleVotService } from "./interaction.service";
+import { addCommentService, deleteCommentService, editCommentService, getCommentsService, getUSerCommentService, GetUserVotesService, toggleVotService } from "./interaction.service";
 
 // Vote Controller
 export const handleVotcontroller = async (req: Request, res: Response) => {
     try {
-
         const { projectId, userEmail } = req.body;
 
         if (!projectId || !userEmail) {
@@ -42,6 +41,8 @@ export const handleCommentController = async (req: Request, res: Response) => {
     }
 }
 
+
+
 // Get Comments Controller
 export const handleGetComments = async (req: Request, res: Response) => {
     try {
@@ -55,6 +56,8 @@ export const handleGetComments = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 }
+
+
 
 // Comment Delete Controller
 export const handleDeleteCommentController = async (req: Request, res: Response) => {
@@ -98,5 +101,48 @@ export const handleEditCommentController = async (req: Request, res: Response) =
 
     } catch (error: any) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+}
+
+
+// Get User Comments Controller
+export const handleGetUSerComments = async (req: Request, res: Response) => {
+    try {
+        const { userEmail } = req.query;
+
+        if(!userEmail) {
+            return res.status(400).json({ success: false, message: "User email is required"});
+        }
+
+        const userComments = await getUSerCommentService(userEmail as string);
+
+        res.status(200).json({
+            success: true,
+            comments: userComments,
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message })
+    }
+}
+
+
+// Get User Votes Controller
+export const handleGetUSerVotes = async (req:Request, res: Response) => {
+    try {
+        const { userEmail } = req.query;
+
+        if(!userEmail) {
+            return res.status(400).json({ success: false, message: "User email is required"});
+        }
+
+        const userVotes = await GetUserVotesService(userEmail as string);
+
+        res.status(200).json({
+            success: true,
+            votes: userVotes,
+        });
+
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message })
     }
 }

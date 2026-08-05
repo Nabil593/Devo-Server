@@ -95,3 +95,52 @@ export const editCommentService = async (commentId: string, newcommentText: stri
 
   return updateComment;
 }
+
+
+// Get User Comments Service with $lookup
+export const getUSerCommentService = async (userEmail: string) => {
+  const db = await connectDB();
+  const interactionsCollection = db.collection<IInteractionComment>("Comments");
+
+  const userComments = await interactionsCollection.aggregate([
+    { $match: { userEmail } },
+    {
+      $lookup: {
+        from: "projects",
+        let: { projId: { $toObjectId: "$projectId" } },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$_id", "$$projId"] } } }
+        ],
+        as: "projectDetails",
+      },
+    },
+    { $unwind: { path: "$projectDetails", preserveNullAndEmptyArrays: true } },
+    { $sort: { createdAt: -1 } },
+  ]).toArray();
+
+  return userComments;
+};
+
+// Get User Votes Service with $lookup
+export const GetUserVotesService = async (userEmail: string) => {
+  const db = await connectDB();
+  const interactionsCollection = db.collection<IInteractionVote>("Votes");
+
+  const userVotes = await interactionsCollection.aggregate([
+    { $match: { userEmail } },
+    {
+      $lookup: {
+        from: "projects",
+        let: { projId: { $toObjectId: "$projectId" } },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$_id", "$$projId"] } } }
+        ],
+        as: "projectDetails",
+      },
+    },
+    { $unwind: { path: "$projectDetails", preserveNullAndEmptyArrays: true } },
+    { $sort: { createdAt: -1 } },
+  ]).toArray();
+
+  return userVotes;
+};
