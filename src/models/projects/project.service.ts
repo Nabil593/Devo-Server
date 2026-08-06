@@ -67,3 +67,28 @@ export const getMyProjectsService = async (userEmail: string) => {
   const query = { userEmail: userEmail };
   return await collection.find(query).toArray();
 }
+
+
+// Delete My Projects Service
+export const deleteMyProjectsService = async (projectId: string) => {
+  const db = await connectDB();
+  const collection = db.collection<IProject>('projects');
+
+  const query = { _id: new ObjectId(projectId)};
+  const result = await collection.deleteOne(query);
+  return result;
+}
+
+// Edit My Project Service
+export const editMyProjectService = async (projectId: string, updatedData: any) => {
+  const db = await connectDB();
+  const collection = db.collection<IProject>('projects');
+
+  const query = { _id: new ObjectId(projectId) };
+  const update = { $set: updatedData };
+  
+  await collection.updateOne(query, update);
+
+  const updatedProject = await collection.findOne(query);
+  return updatedProject;
+}

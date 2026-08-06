@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createNewProject, getAllProjectsService, getMyProjectsService, getSingleDetails } from "./project.service";
+import { createNewProject, deleteMyProjectsService, editMyProjectService, getAllProjectsService, getMyProjectsService, getSingleDetails } from "./project.service";
 
 // Create New Project
 export const createProject = async(req: Request, res: Response): Promise<void> => {
@@ -80,5 +80,33 @@ export const getMyProjects = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+}
+
+// Deelete My Projects
+export const DeleteMyProjects = async (req: Request, res: Response) => {
+  try {
+    const projectId = req.params.id as string;
+
+    const deletedProject = await deleteMyProjectsService(projectId);
+
+    res.status(200).json({ success: true, message: "Project deleted successfully", data: deletedProject});
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message});
+  }
+}
+
+
+// Edit My Projects
+export const EditMyProjects = async (req: Request, res: Response) => {
+  try {
+    const projectId = req.params.id as string;
+    const updateData = req.body;
+
+    const updatedProject = await editMyProjectService(projectId, updateData);
+
+    res.status(200).json({ success: true, message: "Project updated successfully", data: updatedProject});
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message});
   }
 }
